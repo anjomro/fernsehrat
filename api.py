@@ -1,22 +1,24 @@
+from functools import cache
 from typing import Dict, List
 
 import httpx
 
 from node import Node
 
-from requester import get_url, get_document, categories_overview_url
+from requester import get_url, get_id
 
 
 def get_categories() -> Dict[str, str]:
-    result = get_url(categories_overview_url)
+    result = get_id("rubrikenuebersicht-100")
     # cluster / 0 / teaser
     # { (id): (titel) }
     categories_list = result["cluster"][0]["teaser"]
     return {category["id"]: category["titel"] for category in categories_list}
 
 
+@cache
 def get_category(category_id: str) -> List[Node]:
-    result = get_document(category_id)
+    result = get_id(category_id)
     elements = []
     cluster_list = result["cluster"]
     for cluster in cluster_list:
@@ -29,7 +31,7 @@ def get_category(category_id: str) -> List[Node]:
 
 elm = []
 
-cats = get_categories()
+'''cats = get_categories()
 
 for category_id, category_title in cats.items():
     print(f"{category_id}: {category_title}")
@@ -37,3 +39,4 @@ for category_id, category_title in cats.items():
 
 #elm[0][621].get_children_pool()
 test = 0
+'''
