@@ -1,40 +1,39 @@
-from typing import Dict
+from typing import Dict, List
 
 import httpx
 
-BASE_URL = "https://zdf-cdn.live.cellular.de/mediathekV2/"
+from node import Node
 
-USER_AGENT = "com.zdf.android.mediathek/5.19 Dalvik/2.1.0 (Linux; U; Android 9; Galaxy S10 Build/PI)"
-
-categories_overview_url = BASE_URL + "categories-overview"
+from requester import get_url, get_document, categories_overview_url
 
 
 def get_categories() -> Dict[str, str]:
-    headers = {
-        "User-Agent": USER_AGENT,
-    }
-    with httpx.Client() as client:
-        response = client.get(categories_overview_url, headers=headers)
-        response.raise_for_status()
-        result = response.json()
-        # cluster / 0 / teaser
-        # { (id): (titel) }
-        categories_list = result["cluster"][0]["teaser"]
-        return {category["id"]: category["titel"] for category in categories_list}
+    result = get_url(categories_overview_url)
+    # cluster / 0 / teaser
+    # { (id): (titel) }
+    categories_list = result["cluster"][0]["teaser"]
+    return {category["id"]: category["titel"] for category in categories_list}
 
 
-def get_category(category_id: str) -> Dict[str, str]:
-    headers = {
-        "User-Agent": USER_AGENT,
-    }
-    with httpx.Client() as client:
-        response = client.get(BASE_URL + "document" + category_id, headers=headers)
-        response.raise_for_status()
-        # cluster / 0-n / teaser / 0-n
-        # { (id): (titel) }
-        result = response.json()
+def get_category(category_id: str) -> List[Node]:
+    result = get_document(category_id)
+    elements = []
+    cluster_list = result["cluster"]
+    for cluster in cluster_list:
+        teaser_list = cluster["teaser"]
+        for element in teaser_list:
+            new_node = Node(element)
+            elements.append(new_node)
+    return elements
 
 
+elm = []
 
-for category_id, category_title in get_categories().items():
+cats = get_categories()
+
+for category_id, category_title in cats.items():
     print(f"{category_id}: {category_title}")
+    elm.append(get_category(category_id))
+
+#elm[0][621].get_children_pool()
+test = 0
