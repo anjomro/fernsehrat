@@ -1,8 +1,8 @@
-from api import get_category, get_categories
+from api import get_categories
 from nicegui import ui
 
 from node import Node
-from ui.theme import frame
+from theme import frame
 
 
 @ui.page("/")
