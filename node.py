@@ -1,3 +1,4 @@
+from functools import cache
 from typing import List
 
 from nicegui import ui
@@ -54,6 +55,7 @@ class Node:
         img_width = teaserbild.get(str(width), {})
         return img_width.get("url", "")
 
+
     def get_img_ui(self, requested_width: int = 1):
         teaserbild = self.raw.get("teaserBild", {})
         img_width = teaserbild.get(str(requested_width), {})
@@ -64,7 +66,7 @@ class Node:
     def get_preview_ui(self):
         with ui.link(target=f"/doc/{self.uid}"):
             with ui.card().tight().classes("w-72"):
-                ui.image(self.get_img_url(7)).classes("h-full")
+                #ui.image(self.get_img_url(7)).classes("h-full")
                 # element.get_img_ui(7)
                 with ui.card_section():
                     ui.label(self.title)
@@ -80,12 +82,42 @@ class Node:
                 elements.append(new_node)
         return elements
 
+    @cache
+    def get_video_url(self) -> str:
+        if self.type == "video":
+            if "document" in self.raw and "formitaeten" in self.raw["document"]:
+                formitaeten = self.raw["document"]["formitaeten"]
+                mime_type_priorities = ["video/mp4", "application/x-mpegURL"]
+                quality_priorities = ["fhd", "hd", "veryhigh", "high", "medium", "low"]
+                for mime_type in mime_type_priorities:
+                    for quality in quality_priorities:
+                        for formitaet in formitaeten:
+                            if formitaet.get("mimeType", "") == mime_type and formitaet.get("quality", "") == quality:
+                                return formitaet.get("url", "")
+
+        else:
+            return ""
+
     def get_standalone_ui(self):
         if self.type == "category":
-            for cluster_index in range(0, len(self.raw.get("cluster", []))):
+            i = 0
+            for cluster_index, cluster in enumerate(self.raw.get("cluster", [])):
                 with ui.row():
+                    cl_name = cluster.get("name", "")
+                    if cl_name:
+                        with ui.card().classes("h-full"):
+                            ui.label(cl_name).style(
+                                "writing-mode: sideways-lr; text-orientation: sideways; font-weight: bold;")
                     for element in self.get_teasers_from_cluster(cluster_index):
                         element.get_preview_ui()
+                        i += 1
+            print(f"Total elements: {i}")
+        if self.type == "video":
+            with ui.column().classes("items-center"):
+                with ui.row():
+                    # big central player with video, fit video to screen
+                    with ui.card().tight().classes("w-2/3 mr-auto ml-auto"):
+                        ui.video(self.get_video_url(), autoplay=True, controls=True)
         else:
             with ui.row().classes('items-stretch'):
                 for element in self.get_children_pool():
