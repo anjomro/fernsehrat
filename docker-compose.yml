@@ -1,0 +1,17 @@
+version: "3"
+services:
+  fernsehrat:
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./downloads:/app/downloads
+    restart: always
+    image: anjomro/fernsehrat
+    build:
+      context: .
+    container_name: fernsehrat
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
