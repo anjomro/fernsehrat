@@ -1,4 +1,5 @@
 from functools import cache
+from pathlib import Path
 
 import httpx
 
@@ -9,6 +10,7 @@ USER_AGENT = "com.zdf.android.mediathek/5.19 Dalvik/2.1.0 (Linux; U; Android 9; 
 
 @cache
 def get_url(url: str) -> dict:
+    print(f"Requesting: {url}")
     headers = {
         "User-Agent": USER_AGENT,
     }
@@ -20,3 +22,15 @@ def get_url(url: str) -> dict:
 
 def get_id(did: str) -> dict:
     return get_url(BASE_URL + did)
+
+
+def download_file(url: str, dest_path: str):
+    path = Path(dest_path)
+    # Check if path exists, if not create it
+    path.parent.mkdir(parents=True, exist_ok=True)
+    print(f"Downloading: {url} to {path}")
+    with httpx.stream("GET", url) as response:
+        with path.open("wb") as file:
+            for chunk in response.iter_bytes():
+                file.write(chunk)
+    print(f"Downloaded {path}")

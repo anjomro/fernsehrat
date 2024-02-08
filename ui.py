@@ -18,10 +18,6 @@ def home():
                         ui.button(category_title)
 
 
-def brand():
-    pass
-
-
 @ui.page("/doc/{document_id}")
 def document(document_id: str):
     with frame("Document"):
@@ -31,4 +27,4 @@ def document(document_id: str):
 
 ui.add_head_html('<meta name="referrer" content="same-origin" />')
 ui.html('<meta name="referrer" content="same-origin" />')
-ui.run(title="Fernsehrat", reload=False)
+ui.run(title="Fernsehrat", reload=True)
