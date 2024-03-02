@@ -141,9 +141,8 @@ class Node:
         video_name = self.raw.get("document", self.raw).get("videoId", self.uid)
         file_extension = url.split(".")[-1]
         file_name = f"{video_name}.{file_extension}"
-        path = self.raw.get("document", self.raw).get("structureNodePath", "")
+        path = self.raw.get("document", self.raw).get("brandTitle", "")
         if path:
-            path = path.lstrip("/zdf")
             file_name = f"{path}/{file_name}"
         file_name = f"downloads/{file_name}"
         file_name.replace("//", "/")
