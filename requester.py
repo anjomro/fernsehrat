@@ -8,7 +8,6 @@ BASE_URL = "https://zdf-cdn.live.cellular.de/mediathekV2/document/"
 USER_AGENT = "com.zdf.android.mediathek/5.19 Dalvik/2.1.0 (Linux; U; Android 9; Galaxy S10 Build/PI)"
 
 
-@cache
 def get_url(url: str) -> dict:
     print(f"Requesting: {url}")
     headers = {
