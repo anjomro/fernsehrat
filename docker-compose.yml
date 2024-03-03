@@ -6,7 +6,7 @@ services:
     volumes:
       - ./downloads:/app/downloads
     restart: always
-    image: anjomro/fernsehrat
+    image: ghcr.io/anjomro/fernsehrat:v1.0.0
     build:
       context: .
     container_name: fernsehrat
