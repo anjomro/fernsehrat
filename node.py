@@ -151,8 +151,8 @@ class Node:
             file_name = f"{path}/{file_name}"
         file_name = f"downloads/{file_name}"
         file_name.replace("//", "/")
-        #thread = Thread(target=requester.download_file, args=(url, file_name))
-        #thread.start()
+        thread = Thread(target=requester.download_file, args=(url, file_name))
+        thread.start()
         ui.notify(f"Download gestartet: {self.title}")
 
     def get_standalone_ui(self):
