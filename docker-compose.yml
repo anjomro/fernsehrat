@@ -10,6 +10,8 @@ services:
     build:
       context: .
     container_name: fernsehrat
+    environment:
+      - SERVER_DOWNLOAD=false
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
       interval: 10s

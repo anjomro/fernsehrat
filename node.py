@@ -5,7 +5,9 @@ from threading import Thread
 from typing import List, Optional
 
 from nicegui import ui
+
 import requester
+import config
 
 
 class Node:
@@ -135,6 +137,9 @@ class Node:
             return ""
 
     def download(self, button: Optional[ui.button] = None):
+        if not config.enable_server_download():
+            ui.notify("Server download is not enabled!")
+            return
         if button:
             button.disable()
         url = self.get_video_url()
@@ -146,8 +151,9 @@ class Node:
             file_name = f"{path}/{file_name}"
         file_name = f"downloads/{file_name}"
         file_name.replace("//", "/")
-        thread = Thread(target=requester.download_file, args=(url, file_name))
-        thread.start()
+        #thread = Thread(target=requester.download_file, args=(url, file_name))
+        #thread.start()
+        ui.notify(f"Download gestartet: {self.title}")
 
     def get_standalone_ui(self):
         if self.type == "category":
@@ -190,7 +196,8 @@ class Node:
                     with ui.row().classes("w-full h-full justify-center items-center"):
                         with ui.element("a").props(f"href={self.get_video_url()} download"):
                             ui.button(icon="file_download")
-                        ui.button(icon="cloud_download", on_click=self.download)
+                        if config.enable_server_download():
+                            ui.button(icon="cloud_download", on_click=self.download)
                         ui.button(icon="content_copy")
                 with ui.card().tight().classes("w-2/3"):
                     with ui.expansion("Raw Data").classes("w-full"):
